@@ -3,6 +3,10 @@
 # mysql_configure.sh
 #
 
+if [[ condition1 && condition2 ]]; then
+else
+fi
+
 
         #if ENV variables are provided in container use it as is, if not left use defaults
         ZM_DB_HOST=${ZM_DB_HOST:-localhost} && \
