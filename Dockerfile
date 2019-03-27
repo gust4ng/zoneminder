@@ -50,7 +50,25 @@ RUN	cd /root && \
 	sed -i "s|^;date.timezone =.*|date.timezone = ${TZ}|" /etc/php/$PHP_VERS/apache2/php.ini && \
 	rm -f /etc/apache2/sites-enabled/000-default.conf && \
 	rm -f /etc/apache2/sites-available/000-default.conf && \
-	service mysql start && \
+	service mysql start
+
+RUN	######## 
+        #if ZM_DB_HOST variable is provided in container use it as is, if not left as localhost
+        ZM_DB_HOST=${ZM_DB_HOST:-localhost} && \
+        #if MYSQL_ROOT_PASSWORD variable is provided in container use it as is, if not left as mysqlpsswd
+        MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-mysqlpsswd} && \
+	
+	mysql -uroot < /usr/share/zoneminder/db/zm_create.sql && \
+	mysql -uroot -e "grant all on zm.* to 'zmuser'@localhost identified by 'zmpass';" && \
+	mysqladmin -uroot reload && \
+	mysql -sfu root < "mysql_secure_installation.sql" && \
+	rm mysql_secure_installation.sql && \
+	mysql -sfu root < "mysql_defaults.sql" && \
+	rm mysql_defaults.sql
+	
+        sed  -i "s|ZM_DB_HOST=localhost|ZM_DB_HOST=$ZM_DB_HOST|" /etc/zm/zm.conf && \
+        sed  -i "s|MYSQL_ROOT_PASSWORD=mysqlpsswd|MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD|" /etc/zm/zm.conf && \
+	#########
 	mysql -uroot < /usr/share/zoneminder/db/zm_create.sql && \
 	mysql -uroot -e "grant all on zm.* to 'zmuser'@localhost identified by 'zmpass';" && \
 	mysqladmin -uroot reload && \
@@ -74,23 +92,6 @@ RUN	systemd-tmpfiles --create zoneminder.conf && \
 	chown -R www-data:www-data /var/lib/zmeventnotification/ && \
 	chmod -R +x /etc/my_init.d/ && \
 	cp -p /etc/zm/zm.conf /root/zm.conf && \
-	######## 
-        #if ZM_DB_HOST variable is provided in container use it as is, if not left as localhost
-        ZM_DB_HOST=${ZM_DB_HOST:-localhost} && \
-        #if MYSQL_ROOT_PASSWORD variable is provided in container use it as is, if not left as mysqlpsswd
-        MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-mysqlpsswd} && \
-	
-	mysql -uroot < /usr/share/zoneminder/db/zm_create.sql && \
-	mysql -uroot -e "grant all on zm.* to 'zmuser'@localhost identified by 'zmpass';" && \
-	mysqladmin -uroot reload && \
-	mysql -sfu root < "mysql_secure_installation.sql" && \
-	rm mysql_secure_installation.sql && \
-	mysql -sfu root < "mysql_defaults.sql" && \
-	rm mysql_defaults.sql
-	
-        sed  -i "s|ZM_DB_HOST=localhost|ZM_DB_HOST=$ZM_DB_HOST|" /etc/zm/zm.conf && \
-        sed  -i "s|MYSQL_ROOT_PASSWORD=mysqlpsswd|MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD|" /etc/zm/zm.conf && \
-	#########
 	echo "#!/bin/sh\n\n/usr/bin/zmaudit.pl -f" >> /etc/cron.weekly/zmaudit && \
 	chmod +x /etc/cron.weekly/zmaudit
 
