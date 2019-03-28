@@ -5,6 +5,7 @@
 
 ZM_DB_HOST=${ZM_DB_HOST:-localhost}
 ZM_DB_PORT=${ZM_DB_PORT:-3306}
+MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-root}
 MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-mysqlpsswd}
 ZM_DB_USER=${ZM_DB_USERNAME:-zmuser}
 ZM_DB_PASS=${ZM_DB_PASSWORD:-zmpass}
@@ -21,10 +22,10 @@ else
         sed  -i "s|ZM_DB_HOST=localhost|ZM_DB_HOST=$ZM_DB_HOST:$ZM_DB_PORT|" /etc/zm/zm.conf
 	sed  -i "s|ZM_DB_USER=zmuser|ZM_DB_USER=$ZM_DB_USER|" /etc/zm/zm.conf
 	sed  -i "s|ZM_DB_USER=zmpass|ZM_DB_USER=$ZM_DB_PASS|" /etc/zm/zm.conf
-	mysql --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user="root" --password="$MYSQL_ROOT_PASSWORD" < /usr/share/zoneminder/db/zm_create.sql
-	mysql --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user="root" --password="$MYSQL_ROOT_PASSWORD" -e "grant all on zm.* to '$ZM_DB_USER'@'%' identified by 'ZM_DB_PASS';"
-	mysqladmin --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user="root" --password="$MYSQL_ROOT_PASSWORD" reload
-	mysql -sf --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user="root" --password="$MYSQL_ROOT_PASSWORD" < "mysql_defaults.sql"
+	mysql --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user="$MYSQL_ROOT_USER" --password="$MYSQL_ROOT_PASSWORD" < /usr/share/zoneminder/db/zm_create.sql
+	mysql --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user="$MYSQL_ROOT_USER" --password="$MYSQL_ROOT_PASSWORD" -e "grant all on zm.* to '$ZM_DB_USER'@'%' identified by 'ZM_DB_PASS';"
+	mysqladmin --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user="$MYSQL_ROOT_USER" --password="$MYSQL_ROOT_PASSWORD" reload
+	mysql -sf --host=$ZM_DB_HOST --port=$ZM_DB_PORT --user="$MYSQL_ROOT_USER" --password="$MYSQL_ROOT_PASSWORD" < "mysql_defaults.sql"
 	rm mysql_defaults.sql
 	rm mysql_secure_installation.sql
 fi
