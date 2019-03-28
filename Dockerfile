@@ -53,7 +53,7 @@ RUN	cd /root && \
 	service mysql start
 
 RUN	chmod +x /init/mysql_configure.sh && \
-	/init/installZMEventServer.sh
+	/init/mysql_configure.sh
 
 RUN	mv /root/zoneminder /etc/init.d/zoneminder && \
 	chmod +x /etc/init.d/zoneminder && \
