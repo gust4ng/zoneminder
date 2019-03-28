@@ -52,7 +52,6 @@ RUN	cd /root && \
 	rm -f /etc/apache2/sites-available/000-default.conf && \
 	service mysql start
 
-CMD	read -p "Press enter to configure MySQL..."
 COPY	init/mysql_configure.sh /tmp/mysql_configure.sh
 ENTRYPOINT	["/tmp/mysql_configure.sh"];
 	
@@ -60,8 +59,7 @@ RUN	mv /root/zoneminder /etc/init.d/zoneminder && \
 	chmod +x /etc/init.d/zoneminder && \
 	service mysql restart && \
 	sleep 5 && \
-	service apache2 restart && \
-	service zoneminder start
+	service apache2 restart
 
 RUN	systemd-tmpfiles --create zoneminder.conf && \
 	mv /root/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf && \
@@ -79,6 +77,7 @@ RUN	apt-get -y remove wget make && \
 	apt-get -y autoremove && \
 	rm -rf /tmp/* /var/tmp/*
 
+CMD	service zoneminder start
 VOLUME \
 	["/config"] \
 	["/var/cache/zoneminder"]
