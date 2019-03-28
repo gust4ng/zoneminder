@@ -54,9 +54,8 @@ RUN	cd /root && \
 
 CMD	read -p "Press enter to configure MySQL..."
 COPY	init/mysql_configure.sh /tmp/mysql_configure.sh
-RUN 	chmod +x /tmp/mysql_configure.sh && \
-	/tmp/mysql_configure.sh
-
+ENTRYPOINT	["/tmp/mysql_configure.sh"];
+	
 RUN	mv /root/zoneminder /etc/init.d/zoneminder && \
 	chmod +x /etc/init.d/zoneminder && \
 	service mysql restart && \
