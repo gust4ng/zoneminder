@@ -52,7 +52,7 @@ RUN	cd /root && \
 	rm -f /etc/apache2/sites-available/000-default.conf && \
 	service mysql start
 
-COPY	init/mysql_configure.sh /tmp/mysql_configure.sh
+COPY	init/mysql_configure.sh /tmp/
 RUN	chmod +x /tmp/mysql_configure.sh
 	
 RUN	mv /root/zoneminder /etc/init.d/zoneminder && \
