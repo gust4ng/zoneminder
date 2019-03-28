@@ -77,7 +77,8 @@ RUN	apt-get -y remove wget make && \
 	apt-get -y autoremove && \
 	rm -rf /tmp/* /var/tmp/*
 
-CMD	service zoneminder start
+#ENTRYPOINT	["/bin/bash","/tmp/mysql_configure.sh"]
+#CMD	service zoneminder start
 
 VOLUME \
 	["/config"] \
