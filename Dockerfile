@@ -53,7 +53,7 @@ RUN	cd /root && \
 	service mysql start
 
 COPY	init/mysql_configure.sh /tmp/mysql_configure.sh
-ENTRYPOINT	["/tmp/mysql_configure.sh"];
+RUN	chmod +x /tmp/mysql_configure.sh
 	
 RUN	mv /root/zoneminder /etc/init.d/zoneminder && \
 	chmod +x /etc/init.d/zoneminder && \
@@ -78,6 +78,7 @@ RUN	apt-get -y remove wget make && \
 	rm -rf /tmp/* /var/tmp/*
 
 CMD	service zoneminder start
+
 VOLUME \
 	["/config"] \
 	["/var/cache/zoneminder"]
